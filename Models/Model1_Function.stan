@@ -26,8 +26,8 @@ functions{
     //Equations
     real dInd_dt[5];
     dInd_dt[1] = k_IPTG*(x_r[1]-y[1]);
-    dInd_dt[2] = kml0+kml/(1+(y[5]/theta_T*1/(1+(x_r[2]/theta_aTc)^n_aTc))^n_T)-0.1386*y[2];
-    dInd_dt[3] = kmt0+kmt/(1+(y[4]/theta_L*(1/(1+(y[1]/theta_IPTG)^n_IPTG))^n_L))-0.1386*y[3];
+    dInd_dt[2] = kml0+(kml/(1+(y[5]/theta_T*1/(1+(x_r[2]/theta_aTc)^n_aTc))^n_T))-0.1386*y[2];
+    dInd_dt[3] = kmt0+(kmt/(1+(y[4]/theta_L*1/(1+(y[1]/theta_IPTG)^n_IPTG))^n_L))-0.1386*y[3];
     dInd_dt[4] = k_pl*y[2]-0.0165*y[4];
     dInd_dt[5] = k_pt*y[3]-0.0165*y[5];
     //RESULTS
