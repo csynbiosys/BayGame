@@ -44,24 +44,23 @@ data {
   // INPUTS
   int<lower = 0> N; // Number of measurements (time series)
     // Following time ones perhaps not needed
-  real ts[N]; // length of measurements
+  real ts[N]; // time series
+  real tsl; // length of measurements
   real tsmax; // max(ts)
-  real time0[N]; // initial timepoints
+  real time0; // initial timepoints
   
-  real preIPTG[N]; // levels of pre inducers ??? (initial value?, maybe not needed)
-  real preaTc[N];
+  real preIPTG; // levels of pre inducers ??? (initial value?, maybe not needed)
+  real preaTc;
   
   real IPTG[N]; // levels of inducers at each timepoints
-  real aTc;
+  real aTc[N];
   
   // OBSERVABLES
-  int<lower = 0> M; // Number of measurements (time series)
-  real ts[M]; // length of measurements
-  real tsmaxM; // max(ts)
-  real time0[M]; // initial timepoints
+  int<lower=0> M;
+  real sts[M]; // sampling times
   
-  real GFPmean[M] // estimated observables for tetR+GFP (sc_T_molec)
-  real RFPmean[M] // estimated observables for LacI+RFP (sc_L_molec)
+  real GFPmean[M]; // estimated observables for tetR+GFP (sc_T_molec)
+  real RFPmean[M]; // estimated observables for LacI+RFP (sc_L_molec)
   
   real<lower=0> GFPstd[M]; // standard error for tetR+GFP
   real<lower=0> RFPstd[M]; // standard error for LacI+RFP
