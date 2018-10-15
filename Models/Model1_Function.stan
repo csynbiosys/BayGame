@@ -36,7 +36,6 @@ functions{
   // When using expose_stan_functions() it allows to obtain a matrix with the results of the ODE over a time series
   matrix solve_coupled_ode(real[] ts, real[] y0, real[] p, real[] x_r){
     int x_i[0];
-    odeS = integrate_ode_rk45(Toogle_one, y0,0,ts,p,x_r, x_i);
-    return(to_matrix(odeS));
+    return(to_matrix(integrate_ode_rk45(Toogle_one, y0,0,ts,p,x_r, x_i)));
   }
 }
