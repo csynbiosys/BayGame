@@ -141,6 +141,31 @@ for data_set=1:length(Data.expName)
     writetable(Data_table,strcat(data_to_compare{data_set},'_Inputs.csv'));   
 end
 
+%% Extract a csv file with time, inputs_before and inputs during the experiment for each dataset using
+%% the Events-based representation
+
+for data_set=1:length(Data.expName)
+    data_comp= Data.expName{1,data_set};
+    disp(['Considering data from: ' data_comp]);
+    IPTGLev = Data.input{1,data_set}(1,:);
+    aTcLev = Data.input{1,data_set}(2,:);
+    SwitchT = Data.t_con{1,data_set}(1,:);
+    IPTG = IPTGLev';
+    aTc = aTcLev';
+    SwitchingTimes = SwitchT(1:end-1)';
+    
+    IPTG_pre = Data.Initial_IPTG{1,data_set}.*ones(length(IPTG),1);
+    aTc_pre = Data.Initial_aTc{1,data_set}.*ones(length(aTc),1);
+    FinalTime = SwitchT(end).*ones(length(SwitchingTimes),1);
+    
+    index = linspace(1,length(IPTG),length(IPTG));
+    rowsi = strread(num2str(index),'%s');
+    varNames = {'Switchingtimes','FinalTime','IPTGpre','aTcpre','IPTG','aTc'};
+    Data_table= table(SwitchingTimes,FinalTime,IPTG_pre,aTc_pre,IPTG,aTc,'RowNames',rowsi,'VariableNames',varNames);
+    cd('/Users/lucia/Documents/Projects/BayGame/ExperimentalDatacsv')
+
+    writetable(Data_table,strcat(data_to_compare{data_set},'_Events_Inputs.csv'));   
+end
 %% Extract a csv file with time (min), mean and std for each fluorescent reporter, for each experiment
 
 for data_set=1:length(Data.expName)
