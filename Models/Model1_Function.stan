@@ -34,7 +34,7 @@ functions{
     int maxtime = num_elements(ts);
     int Nsp = num_elements(sp);
     int Nevents = num_elements(sp)-1;
-    int Neq = 5;
+    int Neq = 3;
     
     // matrix[maxtime,Neq] total;
     real final[maxtime,Neq];
