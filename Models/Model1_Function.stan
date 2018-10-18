@@ -33,9 +33,47 @@ functions{
     //RESULTS
     return dInd_dt;
   }
-  // When using expose_stan_functions() it allows to obtain a matrix with the results of the ODE over a time series
-  matrix solve_coupled_ode(real[] ts, real[] y0, real[] p, real[] x_r){
-    int x_i[0];
-    return(to_matrix(integrate_ode_rk45(Toogle_one, y0,0,ts,p,x_r, x_i)));
+  // When using expose_stan_functions() it allows to obtain a matrix with the results of the ODE over a time series with time varying inputs
+  matrix solve_coupled_ode(real[] ts, real[] y0, real[] p, real[] x_r, int[] x_i, int[] sp, real[] inputs){
+   
+    
+    int maxtime = num_elements(ts);
+    int Nsp = num_elements(sp);
+    int Nevents = num_elements(sp)-1;
+    int Neq = 5;
+    
+    // matrix[maxtime,Neq] total;
+    real final[maxtime,Neq];
+    real initialV[Neq];
+    int i;
+    initialV = y0;
+    i = 1;
+    
+    for (q in 1:Nevents){
+      int itp = sp[q];  // General way to extract the initial time points of each event
+      int lts = num_elements(ts[(sp[q]+1):sp[q+1]]);  // General way to define the number of elements in each event series
+      real input = inputs[q]; // General way to extract the input values
+      real Tevent[lts] = ts[(sp[q]+1):sp[q+1]];  // General way to extract the times of each event
+      
+      real part1[lts,Neq];
+      real temp[lts,Neq];
+      
+      
+      if (q == 1){part1 = integrate_ode_rk45(Toogle_one, initialV,itp,ts[(sp[q]+1):sp[q+1]],p,to_array_1d(inputs[i:(i+1)]), x_i);}
+      else{part1 = integrate_ode_rk45(Toogle_one, initialV,(itp-1),ts[(sp[q]+1):sp[q+1]],p,to_array_1d(inputs[i:(i+1)]), x_i);}
+      
+      initialV = part1[lts];
+      i=i+2;
+      
+      for (y in (itp+1):(itp+lts)){
+        
+        // total[(y),]=to_matrix(part1)[(y-itp),];
+        final[(y),]=(part1)[(y-itp),];
+      };
+      
+    };
+    
+    return(to_matrix(final));
+
   }
 }
