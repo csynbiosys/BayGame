@@ -171,10 +171,10 @@ end
 for data_set=1:length(Data.expName)
     time_rfp_min = Data.t_samples{1,data_set}(1,:);
     time_gfp_min = Data.t_samples{1,data_set}(2,:);
-    gfp_mean = Data.exp_data{1,data_set}(1,:);
-    gfp_std = Data.standard_dev{1,data_set}(1,:);
-    rfp_mean = Data.exp_data{1,data_set}(2,:);
-    rfp_std = Data.standard_dev{1,data_set}(2,:);
+    gfp_mean = Data.exp_data{1,data_set}(2,:);
+    gfp_std = Data.standard_dev{1,data_set}(2,:);
+    rfp_mean = Data.exp_data{1,data_set}(1,:);
+    rfp_std = Data.standard_dev{1,data_set}(1,:);
     index = linspace(1,length(time_rfp_min),length(time_rfp_min));
     rowsi = strread(num2str(index),'%s');
     varNames = {'timeGFP','GFPmean','GFPstd','timeRFP','RFPmean','RFPstd'};
