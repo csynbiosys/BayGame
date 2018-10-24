@@ -10,19 +10,14 @@ functions{
     real k_out_IPTG = p[2];
     real k_in_aTc = p[3];
     real k_out_aTc = p[4];
-
     real k_L_pm0 = p[5];
     real k_L_pm = p[6];
-
     real theta_T = p[7];
     real theta_aTc = p[8];
     real n_aTc = p[9];
     real n_T = p[10];
-
     real k_T_pm0 = p[11];
     real k_T_pm = p[12];
-
-
     real theta_L = p[13];
     real theta_IPTG = p[14];
     real n_IPTG = p[15];
@@ -48,7 +43,6 @@ functions{
     dInd_dt[3] = ((1/0.1386)*(k_L_pm0+(k_L_pm/(1+(y[4]/theta_T*1/(1+(y[2]/theta_aTc)^n_aTc))^n_T))))-0.0165*y[3];
     dInd_dt[4] = ((1/0.1386)*(k_T_pm0+(k_T_pm/(1+(y[3]/theta_L*1/(1+(y[1]/theta_IPTG)^n_IPTG))^n_L))))-0.0165*y[4];
 
-
     // RESULTS
     return dInd_dt;
   }
@@ -58,11 +52,9 @@ functions{
     int Nevents = num_elements(sp)-1;
     int Neq = 4;
     
-    // matrix[maxtime,Neq] total;
     real final[maxtime,Neq];
     real initialV[Neq];
     int i;
-    
     
     initialV = y0;
     i = 1;
@@ -76,7 +68,6 @@ functions{
       real part1[lts,Neq];
       real temp[lts,Neq];
       
-      
       if (q == 1){part1 = integrate_ode_rk45(Toogle_one, initialV,itp,ts[(sp[q]+1):sp[q+1]],p,to_array_1d(inputs[i:(i+1)]), x_i);}
       else{part1 = integrate_ode_rk45(Toogle_one, initialV,(itp-1),ts[(sp[q]+1):sp[q+1]],p,to_array_1d(inputs[i:(i+1)]), x_i);}
       
@@ -85,7 +76,6 @@ functions{
       
       for (y in (itp+1):(itp+lts)){
         
-        // total[(y),]=to_matrix(part1)[(y-itp),];
         final[(y),]=(part1)[(y-itp),];
       };
       
