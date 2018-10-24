@@ -16,10 +16,10 @@ data_extraction <- function (fileName){
   preA<<-inputs[1,4]
   inp<<-c()
   # Inputs
-  for (x in 1:length(IPTG)){
-    inp <<- c(inp, IPTG[x], aTc[x])
+  for (x in 1:length(u_IPTG)){
+    inp <<- c(inp, u_IPTG[x], u_aTc[x])
   }
-  time<<- seq(1e-9, round(inputs[1,2]), length=round(inputs[1,2]))
+  time<<- seq(1e-9, round(inputs[1,2]), length=round(inputs[1,2])+1)
   
   # Extract observables data and stored into global variables
   observables <<- read.csv(file=fileObservables, header=TRUE, sep=",")
@@ -32,9 +32,10 @@ data_extraction <- function (fileName){
   # Store all data and modified data into a list for RSTan
   data_real <<- list (
                      ts = time,
+                     ts2 = round(time),
                      tsl = length(time),
                      tsmax = time[length(time)],
-                     time0 = round(time[1]),
+                     time0 = time[1],
                      preIPTG = preI,
                      preaTc = preA,
                      IPTG = u_IPTG,
@@ -43,7 +44,7 @@ data_extraction <- function (fileName){
                      inputs = inp,
                      evnT = evnT,
                      stsl = length(samplingT),
-                     sts = samplingT+(1e-6),
+                     sts = trunc(samplingT),
                      GFPmean = GFPmean,
                      RFPmean = RFPmean,
                      GFPstd = GFPstd,
