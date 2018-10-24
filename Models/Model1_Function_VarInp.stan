@@ -36,7 +36,6 @@ functions{
     int Nevents = num_elements(sp)-1;
     int Neq = 3;
     
-    // matrix[maxtime,Neq] total;
     real final[maxtime,Neq];
     real initialV[Neq];
     int i;
@@ -52,7 +51,6 @@ functions{
       real part1[lts,Neq];
       real temp[lts,Neq];
       
-      
       if (q == 1){part1 = integrate_ode_rk45(Toogle_one, initialV,itp,ts[(sp[q]+1):sp[q+1]],p,to_array_1d(inputs[i:(i+1)]), x_i);}
       else{part1 = integrate_ode_rk45(Toogle_one, initialV,(itp-1),ts[(sp[q]+1):sp[q+1]],p,to_array_1d(inputs[i:(i+1)]), x_i);}
       
@@ -61,7 +59,6 @@ functions{
       
       for (y in (itp+1):(itp+lts)){
         
-        // total[(y),]=to_matrix(part1)[(y-itp),];
         final[(y),]=(part1)[(y-itp),];
       };
       
