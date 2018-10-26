@@ -30,10 +30,10 @@ Mean = zeros(1,length(Params)+4);
 Std = Mean;
 Type = {};
 for i=1:length(Params)
-    start = 0.5*Params(i);
-    stop = 1.5*Params(i);
+    start = 0.1*Params(i);
+    stop = 10*Params(i);
     Mean(i) = Params(i);
-    Std(i) = (stop-start)/6;
+    Std(i) = (stop-start)/4;
     Type = [Type; 'unknown'];
     
 end
@@ -51,7 +51,7 @@ rowsi = strread(num2str(index),'%s');
 varNames = {'Parameter_Name','Type','Mean','Std'};
 
 Data= table(Parameter',Type,Mean',Std','RowNames',rowsi,'VariableNames',varNames);
-writetable(Data,'InitialPriors_Lugagne_InducerExchange.csv');    
+writetable(Data,'InitialPriors_Lugagne_InducerExchange_Relaxed.csv');    
 
 
 
