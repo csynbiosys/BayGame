@@ -3,30 +3,55 @@
 functions{
   // Function containing the ODE to be used for the inference
   real[] Toogle_one(real t, real[] y, real[] p, real[] x_r, int[] x_i){
-    // Inputs
+     //PARAMETERS
+    
     real u_IPTG = x_r[1];
     real u_aTc = x_r[2];
-    // Parameters
-    real k_IPTG = p[1];
-    real k_L_pm0 = p[2];
-    real k_L_pm = p[3];
-    real theta_T = p[4];
-    real theta_aTc = p[5];
-    real n_aTc = p[6];
-    real n_T = p[7];
-    real k_T_pm0 = p[8];
-    real k_T_pm = p[9];
-    real theta_L = p[10];
-    real theta_IPTG = p[11];
-    real n_IPTG = p[12];
-    real n_L = p[13];
     
+    real k_in_IPTG = p[1];
+    real k_out_IPTG = p[2];
+    real k_in_aTc = p[3];
+    real k_out_aTc = p[4];
+
+    real k_L_pm0 = p[5];
+    real k_L_pm = p[6];
+
+    real theta_T = p[7];
+    real theta_aTc = p[8];
+    real n_aTc = p[9];
+    real n_T = p[10];
+
+    real k_T_pm0 = p[11];
+    real k_T_pm = p[12];
+
+
+    real theta_L = p[13];
+    real theta_IPTG = p[14];
+    real n_IPTG = p[15];
+    real n_L = p[16];
+
     //Equations
-    real dInd_dt[3];
-    dInd_dt[1] = k_IPTG*(x_r[1]-y[1]);
-    dInd_dt[2] = ((1/0.1386)*(k_L_pm0+(k_L_pm/(1+((y[3]/theta_T)*1/(1+(x_r[2]/theta_aTc)^n_aTc))^n_T))))-0.0165*y[2];
-    dInd_dt[3] = ((1/0.1386)*(k_T_pm0+(k_T_pm/(1+((y[2]/theta_L)*1/(1+(y[1]/theta_IPTG)^n_IPTG))^n_L))))-0.0165*y[3];
-    //RESULTS
+    real dInd_dt[4];
+    
+    if (x_r[1]>y[1]){
+      dInd_dt[1]=k_in_IPTG*(x_r[1]-y[1]);
+    }
+    else{
+      dInd_dt[1]=k_out_IPTG*(x_r[1]-y[1]);
+    }
+    
+    if (x_r[2]>y[2]){
+      dInd_dt[2]=k_in_aTc*(x_r[2]-y[2]);
+    }
+    else{
+      dInd_dt[2]=k_out_aTc*(x_r[2]-y[2]);
+    }
+
+    dInd_dt[3] = ((1/0.1386)*(k_L_pm0+(k_L_pm/(1+(y[4]/theta_T*1/(1+(y[2]/theta_aTc)^n_aTc))^n_T))))-0.0165*y[3];
+    dInd_dt[4] = ((1/0.1386)*(k_T_pm0+(k_T_pm/(1+(y[3]/theta_L*1/(1+(y[1]/theta_IPTG)^n_IPTG))^n_L))))-0.0165*y[4];
+
+
+    // RESULTS
     return dInd_dt;
   }
   
@@ -34,19 +59,24 @@ functions{
   vector SteadyState(vector init, vector p, real[] x_r, int[] x_i){
     vector[2] alpha;
     // Parameters
-    real k_IPTG = p[1];
-    real k_L_pm0 = p[2];
-    real k_L_pm = p[3];
-    real theta_T = p[4];
-    real theta_aTc = p[5];
-    real n_aTc = p[6];
-    real n_T = p[7];
-    real k_T_pm0 = p[8];
-    real k_T_pm = p[9];
-    real theta_L = p[10];
-    real theta_IPTG = p[11];
-    real n_IPTG = p[12];
-    real n_L = p[13];
+
+    real k_in_IPTG = p[1];
+    real k_out_IPTG = p[2];
+    real k_in_aTc = p[3];
+    real k_out_aTc = p[4];
+    real k_L_pm0 = p[5];
+    real k_L_pm = p[6];
+    real theta_T = p[7];
+    real theta_aTc = p[8];
+    real n_aTc = p[9];
+    real n_T = p[10];
+    real k_T_pm0 = p[11];
+    real k_T_pm = p[12];
+    real theta_L = p[13];
+    real theta_IPTG = p[14];
+    real n_IPTG = p[15];
+    real n_L = p[16];
+    
     // Equations
     alpha[1] = ((1/0.1386)*(k_L_pm0+(k_L_pm/(1+((init[2]/theta_T)*1/(1+(x_r[2]/theta_aTc)^n_aTc))^n_T))))/0.0165;
     alpha[2] = ((1/0.1386)*(k_T_pm0+(k_T_pm/(1+((init[1]/theta_L)*1/(1+(x_r[1]/theta_IPTG)^n_IPTG))^n_L))))/0.0165;
@@ -61,8 +91,8 @@ data {
   int<lower = 0> tsl; // Length of time vector
   real ts[tsl]; // Total time vector
   int tsmax; // Last element of the time vector
-  int preIPTG; // Pres values
-  int preaTc;
+  real preIPTG; // Pres values
+  real preaTc;
   int Nsp; // Number of event switching points (including initial and final)
   int evnT[Nsp]; // Event switching points (including initial and final)
   real inputs[(Nsp-1)*2]; // Inputs as IPTG, aTc, IPTG, aTc, ...
@@ -83,8 +113,8 @@ data {
 }
 
 transformed data {
-  int nParms = 13; // Number of parameters of the model
-  int Neq = 3; // Total number of equations of the model
+  int nParms = 16; // Number of parameters of the model
+  int Neq = 4; // Total number of equations of the model
   int Nevents = Nsp-1; // Number of events
   int x_i[0]; // Empty x_i object (needs to be deffined)
   real x_r[(Nevents)*2]=inputs; // Input values for each event ordered as IPTG, aTc, IPTG, aTc, ...
@@ -101,17 +131,20 @@ transformed data {
 
 parameters {
     // Parameters to be infered in the model
-    real<lower=0> k_IPTG;
+    real<lower=0> k_in_IPTG;
+    real<lower=0> k_out_IPTG;
+    real<lower=0> k_in_aTc;
+    real<lower=0> k_out_aTc;
     real<lower=0> k_L_pm0;
     real<lower=0> k_L_pm;
     real<lower=0> theta_T;
-    real<lower=0,upper=100> theta_aTc;
+    real<lower=0> theta_aTc;
     real<lower=0> n_aTc;
     real<lower=0> n_T;
     real<lower=0> k_T_pm0;
     real<lower=0> k_T_pm;
     real<lower=0> theta_L;
-    real<lower=0,upper=1> theta_IPTG;
+    real<lower=0> theta_IPTG;
     real<lower=0> n_IPTG;
     real<lower=0> n_L;
 
@@ -119,20 +152,24 @@ parameters {
 
 transformed parameters {
   // Introduction of the paramemters in an indexed object
-  real<lower=0> theta[nParms];
-  theta[1] = k_IPTG;
-  theta[2] = k_L_pm0;
-  theta[3] = k_L_pm;
-  theta[4] = theta_T;
-  theta[5] = theta_aTc;
-  theta[6] = n_aTc;
-  theta[7] = n_T;
-  theta[8] = k_T_pm0;
-  theta[9] = k_T_pm;
-  theta[10] = theta_L;
-  theta[11] = theta_IPTG;
-  theta[12] = n_IPTG;
-  theta[13] = n_L;
+  real theta[nParms];
+  
+  theta[1] = k_in_IPTG;
+  theta[2] = k_out_IPTG;
+  theta[3] = k_in_aTc;
+  theta[4] = k_out_aTc;
+  theta[5] = k_L_pm0;
+  theta[6] = k_L_pm;
+  theta[7] = theta_T;
+  theta[8] = theta_aTc;
+  theta[9] = n_aTc;
+  theta[10] = n_T;
+  theta[11] = k_T_pm0;
+  theta[12] = k_T_pm;
+  theta[13] = theta_L;
+  theta[14] = theta_IPTG;
+  theta[15] = n_IPTG;
+  theta[16] = n_L;
 
 }
 
@@ -146,7 +183,11 @@ model {
   real ssv[tonil,Neq];
   
   // Priors definition 
-  k_IPTG ~ normal(0.202,0.099);
+  k_in_IPTG ~ normal(0.202,0.099);
+  k_out_IPTG ~ normal(0.202,0.099);
+  k_in_aTc ~ normal(0.505,0.2475);
+  k_out_aTc ~ normal(0.505,0.2475);
+  
   k_L_pm0 ~ normal(0.1515,0.07425);
   k_L_pm ~ normal(50.5,24.75);
   theta_T ~ normal(151.5,74.25);
@@ -163,9 +204,10 @@ model {
   // Calculation of initial guesses
   y_al = SteadyState(to_vector(ivss), to_vector(theta), pre, x_i); // Calculation of initial guesses for steady state
   Y0[1] = preIPTG;
-  Y0[2] = y_al[1];
-  Y0[3] = y_al[2];
-  ssv = integrate_ode_rk45(Toogle_one, Y0,0,toni,theta,pre, x_i); // ON incubation calculation for the steady state
+  Y0[2] = preaTc;
+  Y0[3] = y_al[1];
+  Y0[4] = y_al[2];
+  ssv = integrate_ode_rk45(Toogle_one, Y0,0,toni,theta,pre, x_i, 1e-10,1e-10,1e6); // ON incubation calculation for the steady state
   Y0 = ssv[tonil];
 
   // ODE simulation
@@ -174,7 +216,6 @@ model {
     // Loop (over the number of events) to solve the ODE for each event stopping the solver and add them to the final object y_hat
     for (q in 1:Nevents){
       int itp = evnT[q];  // Initial time points of each event
-      real itp2 = evnT2[q];
       int lts = num_elements(ts[(evnT[q]+1):(evnT[q+1]+1)]);  // Length of the time series for each event
       real part1[lts,Neq]; // Temporary object that will include the solution of the ODE for each event at each loop
     
@@ -192,10 +233,10 @@ model {
       };
     };
 
-  // Residuals (Likelihood calculation)
+  // Likelihood at each sampling time
   for (t in 1:stsl){
-    RFPmean[t] ~ normal(y_hat[(sts[t]+1),2],RFPstd[t]);
-    GFPmean[t] ~ normal(y_hat[(sts[t]+1),3],GFPstd[t]);
+    RFPmean[t] ~ normal(y_hat[(sts[t]+1),3],RFPstd[t]);
+    GFPmean[t] ~ normal(y_hat[(sts[t]+1),4],GFPstd[t]);
   }
 
 }

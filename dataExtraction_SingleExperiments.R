@@ -6,6 +6,7 @@ data_extraction <- function (fileName){
   # Set the name of the two (inputs and observables) files just by introducing the tag of the files
   fileInputs <- paste(fileName, "_Events_Inputs.csv", sep="")
   fileObservables <- paste(fileName, "_Observables.csv", sep="")
+  fileInputsT <- paste(fileName, "_Inputs.csv", sep="")
   
   # Extract input data and stored into global variables
   inputs <<- read.csv(file=fileInputs, header=TRUE, sep=",")
@@ -19,37 +20,46 @@ data_extraction <- function (fileName){
   for (x in 1:length(u_IPTG)){
     inp <<- c(inp, u_IPTG[x], u_aTc[x])
   }
-  time<<- seq(1e-9, round(inputs[1,2]), length=round(inputs[1,2])+1)
+  time<- seq(1e-9, round(inputs[1,2]), length=round(inputs[1,2])+1)
+  
+  inputsT <- read.csv(file=fileInputsT, header=TRUE, sep=",")
+  
+  time2 <- inputsT[,1]
+  time2[1] = 1e-9
   
   # Extract observables data and stored into global variables
   observables <<- read.csv(file=fileObservables, header=TRUE, sep=",")
-  samplingT <<- observables[,1]
+  samplingT <<- round(observables[,1])
   GFPmean <<- observables[,2]
   GFPstd <<- observables[,3]
   RFPmean <<- observables[,5]
   RFPstd <<- observables[,6]
   
+  # Time series for ON incubation 
+  toni <- seq(1e-9, 24*60)
+  
   # Store all data and modified data into a list for RSTan
   data_real <<- list (
-                     ts = time,
-                     ts2 = round(time),
-                     tsl = length(time),
-                     tsmax = time[length(time)],
-                     time0 = time[1],
-                     preIPTG = preI,
+ 
+                     ts = time2, # Total time vector
+                     tsl = length(time2), # Length of time vector
+                     tsmax = time2[length(time2)], # Last element of the time vector
+                     time0 = time2[1], # First element of the time vector
+                     preIPTG = preI, # Pres values
                      preaTc = preA,
-                     IPTG = u_IPTG,
+                     IPTG = u_IPTG, # Input values at each event
                      aTc = u_aTc,
-                     Nsp = length(evnT),
-                     inputs = inp,
-                     evnT = evnT,
-                     stsl = length(samplingT),
-                     sts = trunc(samplingT),
-                     GFPmean = GFPmean,
+                     Nsp = length(evnT), # Number of event switching points (including initial and final)
+                     inputs = inp, # Inputs as IPTG, aTc, IPTG, aTc, ...
+                     evnT = evnT, # Event switching points (including initial and final)
+                     stsl = length(samplingT), # Number of sampling times
+                     sts = samplingT, # Sampling times
+                     GFPmean = GFPmean, # Mean and standard deviations for proteins
                      RFPmean = RFPmean,
                      GFPstd = GFPstd,
-                     RFPstd = RFPstd
-                     
+                     RFPstd = RFPstd,
+                     toni = toni,
+                     tonil = length(toni)
   )
   
 }
