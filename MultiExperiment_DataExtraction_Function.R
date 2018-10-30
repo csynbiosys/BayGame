@@ -1,4 +1,6 @@
-files<-c("Calibration_1", "DynStim_1")
+files<-c("Calibration_1", "Calibration_2","Calibration_3","Calibration_4","Calibration_5","Calibration_6", "BangBang_1", "BangBang_2",
+         "DynStim_1", "DynStim_2", "DynStim_3", "DynStim_4", "DynStim_5", "DynStim_6", "DynStim_7", "DynStim_8", "DynStim_9", "DynStim_10", 
+         "DynStim_11", "DynStim_12", "DynStim_13", "DynStim_14", "DynStimTooFast", "PI_1", "PI_2", "PI_3")
 
 
 data_extraction_multiexperiment <- function (fileNamesVector){
@@ -25,7 +27,7 @@ data_extraction_multiexperiment <- function (fileNamesVector){
     fileObs <- paste(fileNamesVector[i], "_Observables.csv", sep="")
     obs <- read.csv(file=fileObs, header=TRUE, sep=",")
       for(j in 1:length(obs[,1])){
-        samplingT[j,i] <- obs[j,1]
+        samplingT[j,i] <- round(obs[j,1])
         GFPmean[j,i] <- obs[j,2]
         GFPstd[j,i] <- obs[j,3]
         RFPmean[j,i] <- obs[j,5]
@@ -41,12 +43,12 @@ data_extraction_multiexperiment <- function (fileNamesVector){
     fileInp <- paste(i, "_Events_Inputs.csv", sep="")
     inp <- read.csv(file=fileInp, header=TRUE, sep=",")
     mdpI = c(mdpI, length(inp[,1]))
-    mtimes = c(mtimes, inp[1,2])
+    mtimes = c(mtimes, round(inp[1,2]))
   }
   mrowI <- max(mdpI) # Maximum number of rows
   mcolI <- length(fileNamesVector) # Maximum number of columns
   mt <- max(mtimes) # Maximum number of time points
-  
+
   evnT <- matrix(data=0, nrow=mrowI+1, ncol=mcolI)
   u_IPTG <- matrix(data=0, nrow=mrowI, ncol=mcolI)
   u_aTc <- matrix(data=0, nrow=mrowI, ncol=mcolI)
@@ -68,8 +70,10 @@ data_extraction_multiexperiment <- function (fileNamesVector){
       inps[ind+1,i] <- inp[j,6]
       ind = ind+2
     }
-    for(l in 1:round(inp[1,2])+1){
-      time[l,i] <- tempT[l]
+    
+    for(l in 1:length(tempT)){
+      
+      time[l,i] = tempT[l]
     }
     evnT[(length(inp[,1])+1),i] = round(inp[1,2])
     preI[,i] <- inp[1,3]
@@ -77,33 +81,33 @@ data_extraction_multiexperiment <- function (fileNamesVector){
      
   }
 
-  data_multi <<- list (
-    
-    elm = mdpI, # Maximum length of the rows of the matrices except for time and evnT and pres
-    tml = round(mt+1), # Maximum length of the rows for the time matrix
-    
-    ts = time,
-    tsl = round(mtimes), # length of time series per event
-    tsmax = round(mtimes)+1, # maximum time per event
-    preIPTG = preI,
-    preaTc = preA,
-    IPTG = u_IPTG,
-    aTc = u_aTc,
-    Nsp = (mdpI+1), # length(evnT),
-    inputs = inp,
-    evnT = evnT,
-    
-    m = mcol, # Number of time series
-    stsl = mdp, # Number of elements at each time series
-    
-    stslm = mrow,
-    sts = trunc(samplingT),
-    GFPmean = GFPmean,
-    RFPmean = RFPmean,
-    GFPstd = GFPstd,
-    RFPstd = RFPstd
-    
-    
+    toni <- seq(1e-9, 24*60) # Over night incuvation time
+  
+    data_multi <<- list (
+          
+          elm = mrowI, # Maximum length of the rows of the matrices except for time and evnT and pres
+          tml = trunc(mt+1), # Maximum length of the rows for the time matrix
+          ts = time+(1e-9),
+          tsl = round(mtimes), # length of time series per event
+          tsmax = round(mtimes)+1, # maximum time per event
+          preIPTG = preI,
+          preaTc = preA,
+          IPTG = u_IPTG,
+          aTc = u_aTc,
+          Nsp = (mdpI+1), # length(evnT),
+          inputs = inps,
+          evnT = round(evnT),
+          m = mcol, # Number of time series
+          stsl = mdp, # Number of elements at each time series
+          stslm = mrow,
+          sts = trunc(samplingT),
+          GFPmean = GFPmean,
+          RFPmean = RFPmean,
+          GFPstd = GFPstd,
+          RFPstd = RFPstd,
+          toni = toni,
+          tonil = length(toni)
+
   )
 }
 
