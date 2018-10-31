@@ -39,11 +39,13 @@ data_extraction_multiexperiment <- function (fileNamesVector){
   
   mdpI <- c() # Maximum data point for each file
   mtimes <- c() # Maximum time point for each file
+  
   for(i in fileNamesVector){ # Loop that opens a file for each iteration to extract the file with maximum data points
     fileInp <- paste(i, "_Events_Inputs.csv", sep="")
     inp <- read.csv(file=fileInp, header=TRUE, sep=",")
     mdpI = c(mdpI, length(inp[,1]))
     mtimes = c(mtimes, round(inp[1,2]))
+    
   }
   mrowI <- max(mdpI) # Maximum number of rows
   mcolI <- length(fileNamesVector) # Maximum number of columns
@@ -57,10 +59,12 @@ data_extraction_multiexperiment <- function (fileNamesVector){
   time <- matrix(data=0, nrow=mt+1, ncol=mcolI)#<<- seq(1e-9, round(inputs[1,2]), length=round(inputs[1,2]))
   inps <- matrix(data=0, nrow=mrowI*2, ncol=mcolI)#<<-c()
   
+  ltimes <- c() # Length of time series
   for(i in 1:length(fileNamesVector)){ # Loop that opens a file for each iteration to extract the data
     fileInp <- paste(fileNamesVector[i], "_Events_Inputs.csv", sep="")
     inp <- read.csv(file=fileInp, header=TRUE, sep=",")
     tempT <- seq(1e-9, round(inp[1,2]), length=round(inp[1,2])+1)
+    ltimes = c(ltimes, length(tempT))
     ind = 1
     for(j in 1:length(inp[,1])){
       evnT[j,i] <- round(inp[j,1])
@@ -88,19 +92,19 @@ data_extraction_multiexperiment <- function (fileNamesVector){
           elm = mrowI, # Maximum length of the rows of the matrices except for time and evnT and pres
           tml = trunc(mt+1), # Maximum length of the rows for the time matrix
           ts = time+(1e-9),
-          tsl = round(mtimes), # length of time series per event
-          tsmax = round(mtimes)+1, # maximum time per event
+          tsl = ltimes, # length of time series per event
+          tsmax = round(mtimes), # maximum time per event
           preIPTG = preI,
           preaTc = preA,
           IPTG = u_IPTG,
           aTc = u_aTc,
           Nsp = (mdpI+1), # length(evnT),
-          inputs = inps,
+          inputs = inps+1e-5,
           evnT = round(evnT),
           m = mcol, # Number of time series
           stsl = mdp, # Number of elements at each time series
           stslm = mrow,
-          sts = trunc(samplingT),
+          sts = round(samplingT),
           GFPmean = GFPmean,
           RFPmean = RFPmean,
           GFPstd = GFPstd,
