@@ -99,7 +99,7 @@ data_extraction_multiexperiment <- function (fileNamesVector){
           IPTG = u_IPTG,
           aTc = u_aTc,
           Nsp = (mdpI+1), # length(evnT),
-          inputs = inps+1e-5,
+          inputs = inps+1e-7,
           evnT = round(evnT),
           m = mcol, # Number of time series
           stsl = mdp, # Number of elements at each time series
