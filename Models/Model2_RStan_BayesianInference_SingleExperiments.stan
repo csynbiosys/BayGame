@@ -207,7 +207,7 @@ model {
   Y0[2] = preaTc;
   Y0[3] = y_al[1];
   Y0[4] = y_al[2];
-  ssv = integrate_ode_bdf(Toogle_one, Y0,0,toni,theta,pre, x_i, 1e-8, 1e-8, 1e7); // ON incubation calculation for the steady state
+  ssv = integrate_ode_bdf(Toogle_one, Y0,0,toni,theta,pre, x_i, 1e-9, 1e-9, 1e7); // ON incubation calculation for the steady state
   Y0 = ssv[tonil];
 
   // ODE simulation
@@ -220,9 +220,9 @@ model {
       real part1[lts,Neq]; // Temporary object that will include the solution of the ODE for each event at each loop
     
       // Calculation of the solution for the ODEs where for events that are not the firt one the time series starts one minute before the original point of the time serie overlaping with the last point of the previous event with same state values at the time
-      if (q == 1){part1 = integrate_ode_bdf(Toogle_one, initialV,itp,ts[(evnT[q]+1):(evnT[q+1]+1)],theta,to_array_1d(inputs[i:(i+1)]), x_i, 1e-8, 1e-8, 1e7);
+      if (q == 1){part1 = integrate_ode_bdf(Toogle_one, initialV,itp,ts[(evnT[q]+1):(evnT[q+1]+1)],theta,to_array_1d(inputs[i:(i+1)]), x_i, 1e-9, 1e-9, 1e7);
       }
-      else{part1 = integrate_ode_bdf(Toogle_one, initialV,(itp-1e-7),ts[(evnT[q]+1):(evnT[q+1]+1)],theta,to_array_1d(inputs[i:(i+1)]), x_i, 1e-8, 1e-8, 1e7);
+      else{part1 = integrate_ode_bdf(Toogle_one, initialV,(itp-1e-7),ts[(evnT[q]+1):(evnT[q+1]+1)],theta,to_array_1d(inputs[i:(i+1)]), x_i, 1e-9, 1e-9, 1e7);
       }
 
       // Modification of the initial state values for the next event
