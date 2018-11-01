@@ -50,7 +50,7 @@ data_extraction <- function (fileName){
                      IPTG = u_IPTG, # Input values at each event
                      aTc = u_aTc,
                      Nsp = length(evnT), # Number of event switching points (including initial and final)
-                     inputs = inp+1e-5, # Inputs as IPTG, aTc, IPTG, aTc, ...
+                     inputs = inp+1e-7, # Inputs as IPTG, aTc, IPTG, aTc, ...
                      evnT = evnT, # Event switching points (including initial and final)
                      stsl = length(samplingT), # Number of sampling times
                      sts = samplingT, # Sampling times
