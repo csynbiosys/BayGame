@@ -34,6 +34,7 @@ data_extraction_multiexperiment <- function (fileNamesVector){
         RFPstd[j,i] <- obs[j,6]
       }
   }
+  mdp2 <- matrix(data=mdp, nrow=1, ncol = mcol)
   
   ######################## INPUTS ########################
   
@@ -50,7 +51,9 @@ data_extraction_multiexperiment <- function (fileNamesVector){
   mrowI <- max(mdpI) # Maximum number of rows
   mcolI <- length(fileNamesVector) # Maximum number of columns
   mt <- max(mtimes) # Maximum number of time points
-
+  
+  mdpI2 <- matrix(data=mdpI, nrow=1, ncol = mcol)
+  
   evnT <- matrix(data=0, nrow=mrowI+1, ncol=mcolI)
   u_IPTG <- matrix(data=0, nrow=mrowI, ncol=mcolI)
   u_aTc <- matrix(data=0, nrow=mrowI, ncol=mcolI)
@@ -84,7 +87,8 @@ data_extraction_multiexperiment <- function (fileNamesVector){
     preA[,i] <- inp[1,4]
      
   }
-
+  ltimes2 <- matrix(data=ltimes, nrow=1, ncol = length(ltimes))
+ 
     toni <- seq(1e-9, 24*60) # Over night incuvation time
   
     data_multi <<- list (
@@ -92,17 +96,17 @@ data_extraction_multiexperiment <- function (fileNamesVector){
           elm = mrowI, # Maximum length of the rows of the matrices except for time and evnT and pres
           tml = trunc(mt+1), # Maximum length of the rows for the time matrix
           ts = time+(1e-9),
-          tsl = ltimes, # length of time series per event
+          tsl = ltimes2, # length of time series per event
           tsmax = round(mtimes), # maximum time per event
           preIPTG = preI,
           preaTc = preA,
           IPTG = u_IPTG,
           aTc = u_aTc,
-          Nsp = (mdpI+1), # length(evnT),
+          Nsp = (mdpI2+1), # length(evnT),
           inputs = inps+1e-7,
           evnT = round(evnT),
           m = mcol, # Number of time series
-          stsl = mdp, # Number of elements at each time series
+          stsl = mdp2, # Number of elements at each time series
           stslm = mrow,
           sts = round(samplingT),
           GFPmean = GFPmean,
