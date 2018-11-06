@@ -60,7 +60,7 @@ data {
     // Observables
     int m; // Total number of data series
     int stslm; // Maximum number of rows for all the observable matrices
-    int stsl[m]; // Number of elements at each time series for each series m
+    int stsl[1,m]; // Number of elements at each time series for each series m
     int sts[stslm,m]; // Sampling times for each series m
     real GFPmean[stslm,m]; // estimated observables for tetR+GFP at each sampling time
     real RFPmean[stslm,m]; // estimated observables for LacI+RFP at each sampling time
@@ -71,9 +71,10 @@ data {
     int elm; // Number of rows in the matrices for IPTG and aTc, half for the inputs and -1 for the total number of events
     int tml; // Maximum length of the rows for the sampling times matrix
     int Nsp[m]; // Number of event switching points (including final time) times for each series m
+    int Nsp[1,m]; // Number of event switching points (including final time) times for each series m
     real ts[tml, m]; // Time series for each serie m
-    int tsl[m]; // Length of sampling time series per serie m
-    int tsmax[m]; // Maximum sampling time value per serie m
+    int tsl[1,m]; // Length of sampling time series per serie m
+    
     real preIPTG[1,m]; // Values of inputs for each serie m for the ON incubation 
     real preaTc[1,m];
     real IPTG[elm,m]; // Values of inputs at each event for each serie m
@@ -165,7 +166,7 @@ model {
   // Likelihood
   for (j in 1:m){
     real ivst[Neq]; // Initial value of the states 
-    real y_hat[(tsl[j]),Neq];
+    real y_hat[(tsl[1,j]),Neq];
     // Calculation of initial guesses
     ing = SteadyState(to_vector(ivss[1:2,j]), to_vector(theta), pre[1:2,j], x_i); // Calculation of initial guesses for steady state
     Y0[1,j] = preIPTG[1,j];
@@ -177,7 +178,7 @@ model {
     i = 1;
     
     // Loop (over the number of events) to solve the ODE for each event stopping the solver and add them to the final object y_hat
-    for (q in 1:Nsp[j]-1){
+    for (q in 1:Nsp[1,j]-1){
       
       int itp = evnT[q,j];  // Initial time points of each event
       int lts = num_elements(ts[(evnT[q,j]+1):(evnT[q+1,j]+1),j]);  // Length of the time series for each event
@@ -206,7 +207,7 @@ model {
     };
 
     // Likelihood at each sampling time
-    for (t in 1:stsl[j]){
+    for (t in 1:stsl[1,j]){
       RFPmean[t,j] ~ normal(y_hat[(sts[t,j]+1),2],RFPstd[t,j]);
 
       GFPmean[t,j] ~ normal(y_hat[(sts[t,j]+1),3],GFPstd[t,j]);
