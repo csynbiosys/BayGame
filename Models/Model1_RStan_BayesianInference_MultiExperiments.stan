@@ -216,3 +216,75 @@ model {
   };
 
 }
+
+generated quantities {
+  
+  matrix[stslm,m] logLikelihood_RFP;
+  matrix[stslm,m] logLikelihood_GFP;
+  
+  // Definition of matrices default values as 0 to avoid problems with NaNs
+  for(x in 1:stslm){
+    for(y in 1:m){
+      logLikelihood_RFP[x,y] = 0;
+      logLikelihood_GFP[x,y] = 0;
+    };
+  }
+  
+
+  // Likelihood
+  for (j in 1:m){
+    real ivst[Neq]; // Initial value of the states 
+    real y_hat[(tsl[j]),Neq];
+    int i; // Increasing index for the inputs
+    vector[2] ing; // Vector that will include the solutio of the algebraic solution for the steady state of the model
+    real ssv[tonil,Neq]; // Real that will include the solution of the ODE for the ON incubation (24h)
+    real Y0[Neq,m]; // Initial values for the ODEs variables at the first event
+    
+    // Calculation of initial guesses
+    ing = SteadyState(to_vector(ivss[1:2,j]), to_vector(theta), pre[1:2,j], x_i); // Calculation of initial guesses for steady state
+    Y0[1,j] = preIPTG[1,j];
+    Y0[2,j] = ing[1];
+    Y0[3,j] = ing[2];
+    ssv = integrate_ode_bdf(Toogle_one, Y0[,j],0,toni,theta,pre[1:2,j], x_i, 1e-9, 1e-9, 1e7); // ON incubation calculation for the steady state
+    
+    Y0[,j] = ssv[tonil];
+    i = 1;
+    
+    // Loop (over the number of events) to solve the ODE for each event stopping the solver and add them to the final object y_hat
+    for (q in 1:Nsp[j]-1){
+      
+      int itp = evnT[q,j];  // Initial time points of each event
+      int lts = num_elements(ts[(evnT[q,j]+1):(evnT[q+1,j]+1),j]);  // Length of the time series for each event
+      real part1[lts,Neq]; // Temporary object that will include the solution of the ODE for each event at each loop
+      // Calculation of the solution for the ODEs where for events that are not the firt one the time series starts one minute before the original point of the time serie overlaping with the last point of the previous event with same state values at the time
+      if (q == 1){
+        ivst = Y0[,j];
+        part1 = integrate_ode_bdf(Toogle_one,ivst,itp,ts[(evnT[q,j]+1):(evnT[q+1,j]+1),j],theta,to_array_1d(inputs[i:(i+1),j]), x_i, 1e-9, 1e-9, 1e7);
+      }
+      else{
+        part1 = integrate_ode_bdf(Toogle_one, ivst,(itp-1e-7),ts[(evnT[q,j]+1):(evnT[q+1,j]+1),j],theta,to_array_1d(inputs[i:(i+1),j]), x_i, 1e-9, 1e-9, 1e7);
+      }
+
+      // Modification of the initial state values for the next event
+      ivst = part1[lts];
+      // Increase index for inputs
+      i=i+2;
+      
+      // Introduction of the result of part1 into the object y_hat
+      for (y in (itp+1):(itp+lts)){
+        
+        y_hat[(y),]=(part1)[(y-itp),];
+        
+      };
+      
+    };
+    
+    // Calculation of LogLikelihood for both fluorecent proteins and for each experimental data looped with
+    for (t in 1:stsl[j]){
+    logLikelihood_RFP[t,j] = normal_lpdf(RFPmean[t,j]|y_hat[(sts[t,j]+1),2],RFPstd[t,j]);
+    logLikelihood_GFP[t,j] = normal_lpdf(GFPmean[t,j]|y_hat[(sts[t,j]+1),3],GFPstd[t,j]);
+    };
+  
+  }
+  
+}
