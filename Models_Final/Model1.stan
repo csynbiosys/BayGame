@@ -205,7 +205,7 @@ model {
     // Likelihood at each sampling time
     for (t in 1:stsl[1,j]){
       yhat2[t,j] = y_hat[(sts[t,j]+1),2];
-      yhat3[t,j] = y_hat[(sts[t,j]+1),43];
+      yhat3[t,j] = y_hat[(sts[t,j]+1),3];
       RFPmean[t,j] ~ normal(yhat2[t,j],RFPstd[t,j]);
       GFPmean[t,j] ~ normal(yhat3[t,j],GFPstd[t,j]);
     }

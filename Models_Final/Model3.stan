@@ -84,7 +84,6 @@ data {
     int Nsp[1,m]; // Number of event switching points (including final time) times for each series m
     real ts[tml, m]; // Time series for each serie m
     int tsl[1,m]; // Length of sampling time series per serie m
-    int tsmax[m]; // Maximum sampling time value per serie m
     real preIPTG[1,m]; // Values of inputs for each serie m for the ON incubation 
     real preaTc[1,m];
     real IPTG[elm,m]; // Values of inputs at each event for each serie m
@@ -250,7 +249,7 @@ generated quantities {
     real ivst[Neq]; // Initial value of the states
     real y_hat[(tsl[1,j]),Neq];
     int i; // Increasing index for the inputs
-    vector[2] ing; // Vector that will include the solutio of the algebraic solution for the steady state of the model
+    vector[4] ing; // Vector that will include the solutio of the algebraic solution for the steady state of the model
     real ssv[tonil,Neq]; // Real that will include the solution of the ODE for the ON incubation (24h)
     real Y0[Neq,m]; // Initial values for the ODEs variables at the first event
 
