@@ -14,6 +14,9 @@ runExp <- function (experiments){
     fit <- stan(file="Model3.stan", data = data_multi, iter = 3000, warmup = 1000, chains = 4, control = list(adapt_delta = 0.95, stepsize_jitter = 0.5, max_treedepth = 13))
     fit.dso <- new("cxxdso")
     saveRDS(fit, file = inter)
+    
+    mes <- paste("Fit for ", x , " has finished!", sep = "")
+    print(mes)
   }
   
 }
