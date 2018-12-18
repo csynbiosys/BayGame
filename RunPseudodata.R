@@ -12,11 +12,11 @@ files2<-c(
   "Constant_1", "Constant_2")
 
 
-files3 <- c("Calibration_4","Calibration_5","Calibration_6", "BangBang_2",
-            "DynStim_2, DynStim_3", "DynStim_9", "DynStim_11")
+files3 <- c("Constant_1", "Constant_2", "Calibration_4","Calibration_5","Calibration_6", "BangBang_2",
+            "DynStim_2", "DynStim_3", "DynStim_9", "DynStim_11")
 
-files4 <- c("Calibration_4_Fake2","Calibration_5_Fake2","Calibration_6_Fake2", "BangBang_2_Fake2",
-            "DynStim_2_Fake2, DynStim_3_Fake2", "DynStim_9_Fake2", "DynStim_11_Fake2")
+files4 <- c("Constant_1_Fake2", "Constant_2_Fake2", "Calibration_4_Fake2","Calibration_5_Fake2","Calibration_6_Fake2", "BangBang_2_Fake2",
+            "DynStim_2_Fake2", "DynStim_3_Fake2", "DynStim_9_Fake2", "DynStim_11_Fake2")
 
 for(x in files3){
   pseudoData(x, "fit_DynStim_2", "Fake2")
