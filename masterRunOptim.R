@@ -6,9 +6,9 @@ files<-c(
 
 runExp <- function (experiments, modelName){
   
-  for(x in experiments){
+  for(y in experiments){
     # Data Extraction
-    data_extraction_multiexperiment(x)
+    data_extraction_multiexperiment(y)
     
     # Initial value optimisation
     m <- stan_model(modelName)
@@ -63,12 +63,12 @@ runExp <- function (experiments, modelName){
 
     # Inference
     
-    inter <- paste("fit_", x,"_", modelName, ".rds", sep="")
+    inter <- paste("fit_", y,"_", modelName, ".rds", sep="")
     fit <- stan(file=modelName, data = data_multi, iter = 2300, warmup = 300, chains = 4, init = p, control = list(adapt_delta = 0.95, stepsize_jitter = 0.5, max_treedepth = 13))
     fit.dso <- new("cxxdso")
     saveRDS(fit, file = inter)
     
-    mes <- paste("Fit for ", x , " has finished!", sep = "")
+    mes <- paste("Fit for ", y , " has finished!", sep = "")
     print(mes)
   }
   
