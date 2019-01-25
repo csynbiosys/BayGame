@@ -43,7 +43,16 @@ runExp <- function (experiments, modelName){
     p3 <- list()
     p4 <- list()
     
-    for(x in 1:14){
+    q <- c()
+    if (modelName == "Model1.stan"){
+      q <- 1:13
+    } else if (modelName == "Model2.stan"){
+      q <- 1:16
+    } else if (modelName == "Model3.stan"){
+      q <- 1:14
+    }
+    
+    for(x in q){
       val1 <- s1$par[[x]]
       nam1 <- names(s1$par[x])
       val2 <- s2$par[[x]]
