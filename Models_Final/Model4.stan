@@ -92,7 +92,7 @@ data {
 }
 
 transformed data {
-  int nParms = 16; // Number of parameters of the model
+  int nParms = 14; // Number of parameters of the model
   int Neq = 4; // Total number of equations of the model
   int x_i[0]; // Empty x_i object (needs to be deffined)
   real x_r[(elm*2),m]=inputs; // Input values for each event ordered as IPTG, aTc, IPTG, aTc, ...
